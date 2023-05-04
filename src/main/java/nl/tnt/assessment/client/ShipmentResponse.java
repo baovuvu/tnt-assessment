@@ -11,7 +11,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // hibernate, serializer
 public class ShipmentResponse {
 
-    private Map<String, List<String>> shipments = new HashMap<>();
+    private final Map<String, List<String>> shipments = new HashMap<>();
 
     //need this to serialize a Map "properly"
     @JsonAnySetter

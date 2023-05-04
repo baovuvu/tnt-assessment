@@ -46,7 +46,7 @@ public class ShipmentClient {
     }
 
     private Map<String, List<String>> callClient(List<String > orderNumbers){
-        final String values = orderNumbers.stream().collect(Collectors.joining(","));
+        final String values = String.join(",", orderNumbers);
         final ShipmentResponse response = webClient
             .get()
             .uri(uriBuilder -> uriBuilder.queryParam("q", values).build())

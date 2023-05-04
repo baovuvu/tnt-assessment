@@ -28,7 +28,7 @@ public class ShipmentRequest {
     public void complete(Map<String, List<String>> shipments) {
         final Map<String, List<String>> result = shipments.entrySet().stream()
             .filter(shipment -> orderNumbers.contains(shipment.getKey()))
-            .collect(Collectors.toMap(entry -> entry.getKey(), Map.Entry::getValue));
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         futureResult.complete(result);
     }
 
