@@ -1,0 +1,9 @@
+###
+GET {{api-url}}/shipments?q=109347263,123456891
+
+###
+GET {{api-url}}/shipments?q=1234
+
+###
+GET {{api-url}}/shipments?q=1234567890
+
