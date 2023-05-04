@@ -1,4 +1,4 @@
-package nl.tnt.assessment.aggregation;
+package nl.tnt.assessment.client;
 
 import lombok.*;
 
@@ -15,27 +15,26 @@ import java.util.stream.Collectors;
 public class ShipmentRequest {
 
     private List<String> orderNumbers;
-    private CompletableFuture<List<Shipment>> futureResult;
+    private CompletableFuture<Map<String, List<String>>> futureResult;
 
     public static ShipmentRequest create(List<String> orderNumbers){
-        final CompletableFuture<List<Shipment>> completableFuture = new CompletableFuture<>();
+        final CompletableFuture<Map<String, List<String>>> completableFuture = new CompletableFuture<>();
         return ShipmentRequest.builder()
             .orderNumbers(orderNumbers)
             .futureResult(completableFuture)
             .build();
     }
 
-    public void complete(List<Shipment> shipments) {
-        final List<Shipment> result = shipments.stream()
-            .filter(shipment -> orderNumbers.contains(shipment.getOrderNumber()))
-            .collect(Collectors.toList());
+    public void complete(Map<String, List<String>> shipments) {
+        final Map<String, List<String>> result = shipments.entrySet().stream()
+            .filter(shipment -> orderNumbers.contains(shipment.getKey()))
+            .collect(Collectors.toMap(entry -> entry.getKey(), Map.Entry::getValue));
         futureResult.complete(result);
     }
 
     public Map<String, List<String>> getResult(){
         try {
-            return futureResult.get().stream()
-                .collect(Collectors.toMap(Shipment::getOrderNumber, Shipment::getProducts));
+            return futureResult.get();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
