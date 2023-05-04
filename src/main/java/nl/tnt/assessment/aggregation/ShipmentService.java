@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
@@ -13,30 +14,26 @@ public class ShipmentService {
     private final Deque<ShipmentRequest> deque = new ArrayDeque<>();
     private final int MAX_QUEUE_SIZE = 5;
 
-    public Future<List<Shipment>> get(List<String> orderNumbers) {
-        final CompletableFuture<List<Shipment>> completableFuture = new CompletableFuture<>();
-        final ShipmentRequest shipmentRequest = ShipmentRequest.builder()
-            .orderNumbers(orderNumbers)
-            .futureResult(completableFuture)
-            .build();
+    public Map<String, List<String>> getResult(List<String> orderNumbers){
+        final ShipmentRequest shipmentRequest = ShipmentRequest.create(orderNumbers);
         deque.add(shipmentRequest);
         checkDeque();
-
-        return shipmentRequest.getFutureResult();
+        return shipmentRequest.getResult();
     }
     private void checkDeque() {
         final List<String> orders = deque.stream()
             .flatMap(shipmentRequest -> shipmentRequest.getOrderNumbers().stream())
+            .distinct()
             .collect(Collectors.toList());
         if (orders.size() >= MAX_QUEUE_SIZE) {
+            // todo: check 2nd story-functionality! Here we process all requests in the queue if the cap is hit, why limit it to only 5??
             processDeque(orders);
         }
     }
 
     private void processDeque(List<String> orders) {
         final List<Shipment> shipments = temp(orders);
-        deque.stream()
-            .forEach(shipmentRequest -> shipmentRequest.complete(shipments));
+        deque.forEach(shipmentRequest -> shipmentRequest.complete(shipments));
         deque.clear();
     }
 

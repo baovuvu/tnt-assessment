@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder
@@ -12,5 +13,5 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE) // builder
 public class AggregationResponse {
 
-    private List<Shipment> shipments;
+    private Map<String, List<String>> shipments;
 }
