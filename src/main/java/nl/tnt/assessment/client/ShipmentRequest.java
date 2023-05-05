@@ -1,11 +1,7 @@
 package nl.tnt.assessment.client;
 
-import lombok.*;
-
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class ShipmentRequest extends ClientRequest<List<String>> {

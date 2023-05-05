@@ -1,8 +1,6 @@
 package nl.tnt.assessment.aggregation;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
-import lombok.experimental.Accessors;
 
 import java.util.List;
 import java.util.Map;

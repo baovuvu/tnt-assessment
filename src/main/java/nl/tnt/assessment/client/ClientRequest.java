@@ -1,12 +1,11 @@
 package nl.tnt.assessment.client;
 
-import lombok.*;
+import lombok.Getter;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 @Getter
 public abstract class ClientRequest<T> {
