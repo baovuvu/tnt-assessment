@@ -1,5 +1,8 @@
 ### get - processed
-GET {{url}}?pricing=NL,CN&track=109347263,123456891&shipments=109347263,123456891,3,4,5,6
+GET {{url}}?shipments=109347263,123456891,3,4,5,6
+
+### get - processed
+GET {{url}}?pricing=NL,CN,DE,BE,FR&track=109347263,123456891&shipments=109347263,123456891,3,4,5,6
 
 ### get - queued
 GET {{url}}?pricing=NL,CN&track=109347263,123456891&shipments=109347263,123456891

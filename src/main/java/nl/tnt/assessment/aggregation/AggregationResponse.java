@@ -14,4 +14,5 @@ import java.util.Map;
 public class AggregationResponse {
 
     private Map<String, List<String>> shipments;
+    private Map<String, Float> pricing;
 }

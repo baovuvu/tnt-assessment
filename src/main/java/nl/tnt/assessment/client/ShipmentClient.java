@@ -15,14 +15,18 @@ public class ShipmentClient {
 
     private final WebClient webClient;
     private final Deque<ShipmentRequest> deque = new ArrayDeque<>();
-    private final int MAX_QUEUE_SIZE = 5;
 
-    public ShipmentClient(@Value("${external.shipmemt.url}") String url) {
+    @Value("${client.shipmemt.queryParamName}")
+    private String queryParamName;
+    @Value("${client.shipmemt.queueCap}")
+    private int queueCap;
+
+    public ShipmentClient(@Value("${client.shipmemt.url}") String url) {
         this.webClient = WebClient.builder().baseUrl(url).build();
     }
 
-    public Map<String, List<String>> get(List<String> orderNumbers){
-        final ShipmentRequest shipmentRequest = ShipmentRequest.create(orderNumbers);
+    public Map<String, List<String>> get(List<String> orderNumbers) {
+        final ShipmentRequest shipmentRequest = new ShipmentRequest(orderNumbers);
         deque.add(shipmentRequest);
         checkDeque();
         return shipmentRequest.getResult();
@@ -33,7 +37,7 @@ public class ShipmentClient {
             .flatMap(shipmentRequest -> shipmentRequest.getOrderNumbers().stream())
             .distinct()
             .collect(Collectors.toList());
-        if (orders.size() >= MAX_QUEUE_SIZE) {
+        if (orders.size() >= queueCap) {
             // todo: check 2nd story-functionality! Here we process all requests in the queue if the cap is hit, why limit it to only 5??
             processDeque(orders);
         }
@@ -45,15 +49,15 @@ public class ShipmentClient {
         deque.clear();
     }
 
-    private Map<String, List<String>> callClient(List<String > orderNumbers){
+    private Map<String, List<String>> callClient(List<String> orderNumbers) {
         final String values = String.join(",", orderNumbers);
         final ShipmentResponse response = webClient
             .get()
-            .uri(uriBuilder -> uriBuilder.queryParam("q", values).build())
+            .uri(uriBuilder -> uriBuilder.queryParam(queryParamName, values).build())
             .retrieve()
             .bodyToMono(ShipmentResponse.class)
             .block();
-        return response.getShipments();
+        return response.getResult();
     }
 
 }

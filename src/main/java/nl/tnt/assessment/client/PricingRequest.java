@@ -1,22 +1,18 @@
 package nl.tnt.assessment.client;
 
-import lombok.*;
-
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-public class ShipmentRequest extends ClientRequest<List<String>> {
+public class PricingRequest extends ClientRequest<Float> {
 
-    public ShipmentRequest(List<String> orderNumbers) {
+    public PricingRequest(List<String> orderNumbers) {
         super(orderNumbers);
     }
 
     @Override
-    public void complete(Map<String, List<String>> shipments) {
-        final Map<String, List<String>> result = shipments.entrySet().stream()
+    public void complete(Map<String, Float> shipments) {
+        final Map<String, Float> result = shipments.entrySet().stream()
             .filter(shipment -> getOrderNumbers().contains(shipment.getKey()))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         getFutureResult().complete(result);

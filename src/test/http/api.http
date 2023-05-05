@@ -1,14 +1,11 @@
 ###
-GET http://localhost:8088/shipments?q=109347263,123456891,3,4,5,6
-
-###
 GET {{api-url}}/shipments?q=109347263,123456891,3,4,5,6
-###
-GET {{api-url}}/shipments?q=109347263,123456891
 
 ###
-GET {{api-url}}/shipments?q=1234
+GET {{api-url}}/pricing?q=NL,CN,DE,BE,FR
 
 ###
-GET {{api-url}}/shipments?q=1234567890
+GET {{api-url}}/track?q=109347263,123456891,3,4,5,6
+
+
 
