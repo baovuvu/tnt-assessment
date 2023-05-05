@@ -10,8 +10,8 @@ import java.util.concurrent.ExecutionException;
 @Getter
 public abstract class ClientRequest<T> {
 
-    private List<String> orderNumbers;
-    private CompletableFuture<Map<String, T>> futureResult = new CompletableFuture<>();
+    private final List<String> orderNumbers;
+    private final CompletableFuture<Map<String, T>> futureResult = new CompletableFuture<>();
 
     public ClientRequest(List<String> orderNumbers){
         this.orderNumbers = orderNumbers;
