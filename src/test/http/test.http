@@ -1,12 +1,24 @@
-### get - processed
-GET {{url}}?shipments=109347263,123456891,3,4,5,6
-
-### get - processed
-GET {{url}}?pricing=NL,CN,DE,BE,FR&track=109347263,123456891&shipments=109347263,123456891,3,4,5,6
-
-### get - queued
+### 1a queued: pricing 2x, track 2x, shipment 2x
 GET {{url}}?pricing=NL,CN&track=109347263,123456891&shipments=109347263,123456891
 
-### get2 - processed
-GET {{url}}?pricing=NL,CN&track=109347263,123456891&shipments=3,4,5,6
+### 1b queued: pricing 3x, track 4x, shipment 6x
+GET {{url}}?pricing=DE&track=3,4&shipments=3,4,5,6
+
+### 1c queued: pricing 4x, track 6x, shipment 6x
+GET {{url}}?pricing=BE&track=5,6
+
+### 1d processed: pricing 6x, track 6x, shipment 6x
+GET {{url}}?pricing=FR,US
+
+### all processed
+GET {{url}}?pricing=NL,CN,DE,BE,FR,US&track=109347263,123456891,3,4,5,6&shipments=109347263,123456891,3,4,5,6
+
+### shipment 5x
+GET {{url}}?shipments=1,2,3,4,5
+
+### pricing 5x
+GET {{url}}?pricing=1,2,3,4,5
+
+### track 5x
+GET {{url}}?track=NL,CN,DE,BE,FR
 

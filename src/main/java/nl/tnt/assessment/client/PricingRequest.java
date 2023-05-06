@@ -11,11 +11,10 @@ public class PricingRequest extends ClientRequest<Float> {
     }
 
     @Override
-    public void complete(Map<String, Float> shipments) {
-        final Map<String, Float> result = shipments.entrySet().stream()
-            .filter(shipment -> getOrderNumbers().contains(shipment.getKey()))
+    protected Map<String, Float> getResult(Map<String, Float> response) {
+        return response.entrySet().stream()
+            .filter(entry -> getOrderNumbers().contains(entry.getKey()))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        getFutureResult().complete(result);
     }
 
 }

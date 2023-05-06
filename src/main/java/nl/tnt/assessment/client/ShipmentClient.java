@@ -3,12 +3,9 @@ package nl.tnt.assessment.client;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class ShipmentClient extends Client<List<String>, ShipmentRequest, ShipmentResponse> {
@@ -20,15 +17,13 @@ public class ShipmentClient extends Client<List<String>, ShipmentRequest, Shipme
     }
 
     @Override
-    protected ClientRequest<List<String>> getRequest(List<String> orderNumbers) {
+    protected ShipmentRequest getRequest(List<String> orderNumbers) {
         return new ShipmentRequest(orderNumbers);
     }
 
     @Override
-    protected ClientResponse<List<String>> getResponse(List<String> orderNumbers) {
-        return responseSpec(orderNumbers)
-            .bodyToMono(ShipmentResponse.class)
-            .block();
+    protected Mono<ShipmentResponse> getResponseBody(WebClient.ResponseSpec responseSpec) {
+        return responseSpec.bodyToMono(ShipmentResponse.class);
     }
 
 }

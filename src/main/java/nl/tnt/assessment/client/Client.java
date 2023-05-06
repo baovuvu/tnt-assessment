@@ -1,15 +1,17 @@
 package nl.tnt.assessment.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class Client<T, REQUEST extends ClientRequest<T>, RESPONSE extends ClientResponse<T>> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Client.class);
     private final WebClient webClient;
     private final Deque<ClientRequest<T>> deque = new ArrayDeque<>();
 
@@ -22,21 +24,24 @@ public abstract class Client<T, REQUEST extends ClientRequest<T>, RESPONSE exten
         this.queueCap = queueCap;
     }
 
-    protected abstract ClientRequest<T> getRequest(List<String> orderNumbers);
-    protected abstract ClientResponse<T> getResponse(List<String> orderNumbers);
-
-
-    public Map<String, T> get(List<String> orderNumbers){
+    public Map<String, T> get(List<String> orderNumbers) {
+        LOGGER.info(String.format("%s get: %s", this.getClass().getSimpleName(), orderNumbers.toString()));
+        if (orderNumbers.isEmpty()) return new HashMap<>();
         final ClientRequest<T> request = getRequest(orderNumbers);
         deque.add(request);
         checkDeque();
         return request.getResult();
     }
 
+    protected abstract REQUEST getRequest(List<String> orderNumbers);
+
+    protected abstract Mono<RESPONSE> getResponseBody(WebClient.ResponseSpec responseSpec);
+
     private void checkDeque() {
+
         final List<String> orderNumbers = deque.stream()
             .flatMap(request -> request.getOrderNumbers().stream())
-            .distinct()
+//            .distinct()
             .collect(Collectors.toList());
         if (orderNumbers.size() >= queueCap) {
             // todo: check 2nd story-functionality! Here we process all requests in the queue if the cap is hit, why limit it to only 5??
@@ -45,21 +50,24 @@ public abstract class Client<T, REQUEST extends ClientRequest<T>, RESPONSE exten
     }
 
     private void processDeque(List<String> orderNumbers) {
+        LOGGER.info(String.format("%s processDeque: %s", this.getClass().getSimpleName(), orderNumbers.toString()));
         final Map<String, T> responses = callClient(orderNumbers);
         deque.forEach(pricingRequest -> pricingRequest.complete(responses));
         deque.clear();
     }
 
     private Map<String, T> callClient(List<String> orderNumbers) {
-        return getResponse(orderNumbers).getResult();
-    }
-
-    protected WebClient.ResponseSpec responseSpec(List<String> orderNumbers){
         final String values = String.join(",", orderNumbers);
-        return webClient
-            .get()
-            .uri(uriBuilder -> uriBuilder.queryParam(queryParamName, values).build())
-            .retrieve();
+        try {
+            final WebClient.ResponseSpec responseSpec = webClient
+                .get()
+                .uri(uriBuilder -> uriBuilder.queryParam(queryParamName, values).build())
+                .retrieve()
+                .onStatus(HttpStatusCode::is5xxServerError, response -> Mono.error(new RuntimeException()));
+            return getResponseBody(responseSpec).block().getResult();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
 }

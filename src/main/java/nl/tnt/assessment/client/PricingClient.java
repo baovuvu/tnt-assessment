@@ -1,11 +1,12 @@
 package nl.tnt.assessment.client;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class PricingClient extends Client<Float, PricingRequest, PricingResponse> {
@@ -17,15 +18,13 @@ public class PricingClient extends Client<Float, PricingRequest, PricingResponse
     }
 
     @Override
-    protected ClientRequest<Float> getRequest(List<String> orderNumbers) {
+    protected PricingRequest getRequest(List<String> orderNumbers) {
         return new PricingRequest(orderNumbers);
     }
 
     @Override
-    protected ClientResponse<Float> getResponse(List<String> orderNumbers) {
-        return responseSpec(orderNumbers)
-            .bodyToMono(PricingResponse.class)
-            .block();
-    }
+    protected Mono<PricingResponse> getResponseBody(WebClient.ResponseSpec responseSpec) {
+        return responseSpec
+            .bodyToMono(PricingResponse.class);}
 
 }
