@@ -15,8 +15,8 @@ public class ShipmentClient extends Client<List<String>, ShipmentRequest, Shipme
     }
 
     @Override
-    protected ShipmentRequest getRequest(List<String> orderNumbers) {
-        return new ShipmentRequest(orderNumbers);
+    protected ShipmentRequest getRequest(List<String> orders) {
+        return new ShipmentRequest(orders);
     }
 
     @Override

@@ -13,7 +13,7 @@ public abstract class Client<T, REQUEST extends ClientRequest<T>, RESPONSE exten
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Client.class);
     private final WebClient webClient;
-    private final Deque<REQUEST> deque = new ArrayDeque<>();
+    private final List<REQUEST> queue = new ArrayList<>();
 
     private final String queryParamName;
     private final int queueCap;
@@ -24,40 +24,40 @@ public abstract class Client<T, REQUEST extends ClientRequest<T>, RESPONSE exten
         this.queueCap = queueCap;
     }
 
-    protected abstract REQUEST getRequest(List<String> orderNumbers);
+    protected abstract REQUEST getRequest(List<String> orders);
     protected abstract Class<RESPONSE> getResponseClass();
     protected abstract RESPONSE getResponse();
 
-    public Map<String, T> get(List<String> orderNumbers) {
-        LOGGER.info(String.format("%s get: %s", this.getClass().getSimpleName(), orderNumbers.toString()));
-        if (orderNumbers.isEmpty()) return new HashMap<>();
-        final REQUEST request = getRequest(orderNumbers);
-        deque.add(request);
-        checkDeque();
-        return request.getResponse().orElse(getResponse()).getResult(orderNumbers);
+    public Map<String, T> get(List<String> orders) {
+        LOGGER.info(String.format("%s get: %s", this.getClass().getSimpleName(), orders.toString()));
+        if (orders.isEmpty()) return new HashMap<>();
+        final REQUEST request = addToQueue(orders);
+        return request.getResponse().orElse(getResponse()).getResult(orders);
     }
 
-    private void checkDeque() {
-
-        final List<String> orderNumbers = deque.stream()
-            .flatMap(request -> request.getOrderNumbers().stream())
-//            .distinct()
+    private REQUEST addToQueue(List<String> orders) {
+        LOGGER.info(String.format("%s addToQueue: %s", this.getClass().getSimpleName(), orders.toString()));
+        final REQUEST request = getRequest(orders);
+        queue.add(request);
+        final List<String> allOrders = queue.stream()
+            .flatMap(item -> item.getOrders().stream())
             .collect(Collectors.toList());
-        if (orderNumbers.size() >= queueCap) {
-            // todo: check 2nd story-functionality! Here we process all requests in the queue if the cap is hit, why limit it to only 5??
-            processDeque(orderNumbers);
-        }
+        LOGGER.info(String.format("%s Queue: %s", this.getClass().getSimpleName(), allOrders.toString()));
+        // todo: check 2nd story-functionality! Here we process all requests in the queue if the cap is hit, why limit it to only 5??
+        if (allOrders.size() >= queueCap)  processQueue(allOrders);
+        return request;
     }
 
-    private void processDeque(List<String> orderNumbers) {
-        LOGGER.info(String.format("%s processDeque: %s", this.getClass().getSimpleName(), orderNumbers.toString()));
-        final RESPONSE response = callClient(orderNumbers);
-        deque.forEach(request -> request.complete(response));
-        deque.clear();
+    private void processQueue(List<String> orders) {
+        LOGGER.info(String.format("%s processQueue: %s", this.getClass().getSimpleName(), orders.toString()));
+        final RESPONSE response = callClient(orders);
+        queue.forEach(request -> request.complete(response));
+        queue.clear();
     }
 
-    private RESPONSE callClient(List<String> orderNumbers) {
-        final String values = String.join(",", orderNumbers);
+    private RESPONSE callClient(List<String> orders) {
+        LOGGER.info(String.format("%s callClient: %s", this.getClass().getSimpleName(), orders.toString()));
+        final String values = String.join(",", orders);
         try {
             return webClient.get()
                 .uri(uriBuilder -> uriBuilder.queryParam(queryParamName, values).build())
@@ -66,6 +66,7 @@ public abstract class Client<T, REQUEST extends ClientRequest<T>, RESPONSE exten
                 .bodyToMono(getResponseClass())
                 .block();
         } catch (Exception e) {
+            LOGGER.info(String.format("%s callClient: %s", this.getClass().getSimpleName(), e.getMessage()));
             return null;
         }
     }

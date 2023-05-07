@@ -15,8 +15,8 @@ public class TrackClient extends Client<String, TrackRequest, TrackResponse> {
     }
 
     @Override
-    protected TrackRequest getRequest(List<String> orderNumbers) {
-        return new TrackRequest(orderNumbers);
+    protected TrackRequest getRequest(List<String> orders) {
+        return new TrackRequest(orders);
     }
 
     @Override

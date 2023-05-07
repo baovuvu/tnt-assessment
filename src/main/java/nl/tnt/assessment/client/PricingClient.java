@@ -15,8 +15,8 @@ public class PricingClient extends Client<Float, PricingRequest, PricingResponse
     }
 
     @Override
-    protected PricingRequest getRequest(List<String> orderNumbers) {
-        return new PricingRequest(orderNumbers);
+    protected PricingRequest getRequest(List<String> orders) {
+        return new PricingRequest(orders);
     }
 
     @Override
