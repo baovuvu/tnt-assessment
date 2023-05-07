@@ -66,7 +66,7 @@ public abstract class Client<T, REQUEST extends ClientRequest<T>, RESPONSE exten
                 .onStatus(HttpStatusCode::is5xxServerError, status -> Mono.error(new RuntimeException()))
                 .bodyToMono(getResponseClass())
                 .block();
-            return response.getResult();
+            return Optional.ofNullable(response).map(s -> s.getResult()).orElse(null);
         } catch (Exception e) {
             return null;
         }
