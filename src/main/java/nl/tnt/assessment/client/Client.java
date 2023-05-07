@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public abstract class Client<T, REQUEST extends ClientRequest<T>> {
+public abstract class Client<T, REQUEST extends ClientRequest<T>, RESPONSE extends ClientResponse<T>> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Client.class);
     private final WebClient webClient;
@@ -35,6 +35,8 @@ public abstract class Client<T, REQUEST extends ClientRequest<T>> {
 
     protected abstract REQUEST getRequest(List<String> orderNumbers);
 
+    protected abstract Class<RESPONSE> getResponseClass();
+
     private void checkDeque() {
 
         final List<String> orderNumbers = deque.stream()
@@ -49,22 +51,20 @@ public abstract class Client<T, REQUEST extends ClientRequest<T>> {
 
     private void processDeque(List<String> orderNumbers) {
         LOGGER.info(String.format("%s processDeque: %s", this.getClass().getSimpleName(), orderNumbers.toString()));
-        final Map<String, T> responses = callClient(orderNumbers);
-        deque.forEach(pricingRequest -> pricingRequest.complete(responses));
+        final RESPONSE response = callClient(orderNumbers);
+        deque.forEach(request -> request.complete(response));
         deque.clear();
     }
 
-    private Map<String, T> callClient(List<String> orderNumbers) {
+    private RESPONSE callClient(List<String> orderNumbers) {
         final String values = String.join(",", orderNumbers);
         try {
-            final ClientResponse<T> response = webClient
-                .get()
+            return webClient.get()
                 .uri(uriBuilder -> uriBuilder.queryParam(queryParamName, values).build())
                 .retrieve()
                 .onStatus(HttpStatusCode::is5xxServerError, status -> Mono.error(new RuntimeException()))
-                .bodyToMono(getRequest(orderNumbers).getResponse().getClass())
+                .bodyToMono(getResponseClass())
                 .block();
-            return Optional.ofNullable(response).map(ClientResponse::getResult).orElse(null);
         } catch (Exception e) {
             return null;
         }

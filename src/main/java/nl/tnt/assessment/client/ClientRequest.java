@@ -7,34 +7,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 @Getter
 public abstract class ClientRequest<T> {
 
     private final List<String> orderNumbers;
-    private final ClientResponse response;
     private final CompletableFuture<Map<String, T>> futureResult = new CompletableFuture<>();
 
-    public ClientRequest(List<String> orderNumbers, ClientResponse response) {
+    public ClientRequest(List<String> orderNumbers) {
         this.orderNumbers = orderNumbers;
-        this.response = response;
     }
 
-    public void complete(Map<String, T> response) {
-        futureResult.complete(response == null ? getNullResult() : getResult(response));
+    public void complete(ClientResponse<T> response) {
+        futureResult.complete(response == null ? getNullResult() : response.getResult(orderNumbers));
     }
 
     private Map<String, T> getNullResult() {
         final Map<String, T> result = new HashMap<>();
         orderNumbers.forEach(orderNumber -> result.put(orderNumber, null));
         return result;
-    }
-
-    private Map<String, T> getResult(Map<String, T> response) {
-        return response.entrySet().stream()
-            .filter(entry -> getOrderNumbers().contains(entry.getKey()))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     public Map<String, T> getResult() {
@@ -46,4 +37,5 @@ public abstract class ClientRequest<T> {
             throw new RuntimeException(e);
         }
     }
+
 }

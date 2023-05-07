@@ -5,7 +5,7 @@ import java.util.List;
 public class PricingRequest extends ClientRequest<Float> {
 
     public PricingRequest(List<String> orderNumbers) {
-        super(orderNumbers, new PricingResponse());
+        super(orderNumbers);
     }
 
 }
