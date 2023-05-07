@@ -12,23 +12,17 @@ import java.util.concurrent.ExecutionException;
 public abstract class ClientRequest<T> {
 
     private final List<String> orderNumbers;
-    private final CompletableFuture<Map<String, T>> futureResult = new CompletableFuture<>();
+    private final CompletableFuture<ClientResponse<T>> futureResult = new CompletableFuture<>();
 
     public ClientRequest(List<String> orderNumbers) {
         this.orderNumbers = orderNumbers;
     }
 
     public void complete(ClientResponse<T> response) {
-        futureResult.complete(response == null ? getNullResult() : response.getResult(orderNumbers));
+        futureResult.complete(response);
     }
 
-    private Map<String, T> getNullResult() {
-        final Map<String, T> result = new HashMap<>();
-        orderNumbers.forEach(orderNumber -> result.put(orderNumber, null));
-        return result;
-    }
-
-    public Map<String, T> getResult() {
+    public ClientResponse<T> getResult() {
         try {
             return futureResult.get();
         } catch (InterruptedException e) {

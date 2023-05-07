@@ -22,9 +22,9 @@ public abstract class ClientResponse<T> {
         result.put(key, value);
     }
 
-    public Map<String, T> getResult(List<String> orderNumbers){
+    public Map<String, T> getResult(List<String> keys){
         return result.entrySet().stream()
-            .filter(entry -> orderNumbers.contains(entry.getKey()))
+            .filter(entry -> keys.contains(entry.getKey()))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 }

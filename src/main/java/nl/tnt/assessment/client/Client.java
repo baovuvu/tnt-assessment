@@ -30,7 +30,15 @@ public abstract class Client<T, REQUEST extends ClientRequest<T>, RESPONSE exten
         final REQUEST request = getRequest(orderNumbers);
         deque.add(request);
         checkDeque();
-        return request.getResult();
+        return Optional.ofNullable(request.getResult())
+            .map(clientResponse -> clientResponse.getResult(orderNumbers))
+            .orElse(getNullResult(orderNumbers));
+    }
+
+    private Map<String, T> getNullResult(List<String> orderNumbers) {
+        final Map<String, T> result = new HashMap<>();
+        orderNumbers.forEach(orderNumber -> result.put(orderNumber, null));
+        return result;
     }
 
     protected abstract REQUEST getRequest(List<String> orderNumbers);
