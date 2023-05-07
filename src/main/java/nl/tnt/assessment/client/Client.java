@@ -34,7 +34,7 @@ public abstract class Client<T, REQUEST extends ClientRequest<T>, RESPONSE exten
         final REQUEST request = getRequest(orderNumbers);
         deque.add(request);
         checkDeque();
-        return Optional.ofNullable(request.getResult()).orElse(getResponse()).getResult(orderNumbers);
+        return request.getResponse().orElse(getResponse()).getResult(orderNumbers);
     }
 
     private void checkDeque() {

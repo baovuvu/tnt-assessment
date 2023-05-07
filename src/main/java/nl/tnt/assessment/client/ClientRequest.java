@@ -3,6 +3,7 @@ package nl.tnt.assessment.client;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -20,9 +21,9 @@ public abstract class ClientRequest<T> {
         futureResult.complete(response);
     }
 
-    public ClientResponse<T> getResult() {
+    public Optional<ClientResponse<T>> getResponse() {
         try {
-            return futureResult.get();
+            return Optional.ofNullable(futureResult.get());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
