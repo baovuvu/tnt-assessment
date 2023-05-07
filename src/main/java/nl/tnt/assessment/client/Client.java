@@ -24,26 +24,18 @@ public abstract class Client<T, REQUEST extends ClientRequest<T>, RESPONSE exten
         this.queueCap = queueCap;
     }
 
+    protected abstract REQUEST getRequest(List<String> orderNumbers);
+    protected abstract Class<RESPONSE> getResponseClass();
+    protected abstract RESPONSE getResponse();
+
     public Map<String, T> get(List<String> orderNumbers) {
         LOGGER.info(String.format("%s get: %s", this.getClass().getSimpleName(), orderNumbers.toString()));
         if (orderNumbers.isEmpty()) return new HashMap<>();
         final REQUEST request = getRequest(orderNumbers);
         deque.add(request);
         checkDeque();
-        return Optional.ofNullable(request.getResult())
-            .map(clientResponse -> clientResponse.getResult(orderNumbers))
-            .orElse(getNullResult(orderNumbers));
+        return Optional.ofNullable(request.getResult()).orElse(getResponse()).getResult(orderNumbers);
     }
-
-    private Map<String, T> getNullResult(List<String> orderNumbers) {
-        final Map<String, T> result = new HashMap<>();
-        orderNumbers.forEach(orderNumber -> result.put(orderNumber, null));
-        return result;
-    }
-
-    protected abstract REQUEST getRequest(List<String> orderNumbers);
-
-    protected abstract Class<RESPONSE> getResponseClass();
 
     private void checkDeque() {
 

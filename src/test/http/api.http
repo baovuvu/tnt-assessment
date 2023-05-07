@@ -1,10 +1,10 @@
-###
+### shipments
 GET {{api-url}}/shipments?q=109347263,123456891,3,4,5,6
 
-###
+### pricing
 GET {{api-url}}/pricing?q=NL,CN,DE,BE,FR
 
-###
+### track
 GET {{api-url}}/track?q=109347263,123456891,3,4,5,6
 
 

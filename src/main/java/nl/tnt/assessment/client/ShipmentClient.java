@@ -24,4 +24,9 @@ public class ShipmentClient extends Client<List<String>, ShipmentRequest, Shipme
         return ShipmentResponse.class;
     }
 
+    @Override
+    protected ShipmentResponse getResponse() {
+        return new ShipmentResponse();
+    }
+
 }

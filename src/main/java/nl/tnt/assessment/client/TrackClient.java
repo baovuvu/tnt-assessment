@@ -24,4 +24,9 @@ public class TrackClient extends Client<String, TrackRequest, TrackResponse> {
         return TrackResponse.class;
     }
 
+    @Override
+    protected TrackResponse getResponse() {
+        return new TrackResponse();
+    }
+
 }

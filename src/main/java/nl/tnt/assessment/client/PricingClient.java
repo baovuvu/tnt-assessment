@@ -24,4 +24,9 @@ public class PricingClient extends Client<Float, PricingRequest, PricingResponse
         return PricingResponse.class;
     }
 
+    @Override
+    protected PricingResponse getResponse() {
+        return new PricingResponse();
+    }
+
 }

@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // hibernate, serializer
@@ -23,8 +22,9 @@ public abstract class ClientResponse<T> {
     }
 
     public Map<String, T> getResult(List<String> keys){
-        return result.entrySet().stream()
-            .filter(entry -> keys.contains(entry.getKey()))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        final Map<String, T> map = new HashMap<>();
+        keys.forEach(key -> map.put(key, result.getOrDefault(key, null)));
+        return map;
     }
+
 }
