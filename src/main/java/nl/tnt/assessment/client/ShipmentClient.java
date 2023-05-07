@@ -2,8 +2,6 @@ package nl.tnt.assessment.client;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -22,8 +20,8 @@ public class ShipmentClient extends Client<List<String>, ShipmentRequest, Shipme
     }
 
     @Override
-    protected Mono<ShipmentResponse> getResponseBody(WebClient.ResponseSpec responseSpec) {
-        return responseSpec.bodyToMono(ShipmentResponse.class);
+    protected Class<ShipmentResponse> getResponseClass() {
+        return ShipmentResponse.class;
     }
 
 }

@@ -35,7 +35,7 @@ public abstract class Client<T, REQUEST extends ClientRequest<T>, RESPONSE exten
 
     protected abstract REQUEST getRequest(List<String> orderNumbers);
 
-    protected abstract Mono<RESPONSE> getResponseBody(WebClient.ResponseSpec responseSpec);
+    protected abstract Class<RESPONSE> getResponseClass();
 
     private void checkDeque() {
 
@@ -59,12 +59,14 @@ public abstract class Client<T, REQUEST extends ClientRequest<T>, RESPONSE exten
     private Map<String, T> callClient(List<String> orderNumbers) {
         final String values = String.join(",", orderNumbers);
         try {
-            final WebClient.ResponseSpec responseSpec = webClient
+            final RESPONSE response = webClient
                 .get()
                 .uri(uriBuilder -> uriBuilder.queryParam(queryParamName, values).build())
                 .retrieve()
-                .onStatus(HttpStatusCode::is5xxServerError, response -> Mono.error(new RuntimeException()));
-            return getResponseBody(responseSpec).block().getResult();
+                .onStatus(HttpStatusCode::is5xxServerError, status -> Mono.error(new RuntimeException()))
+                .bodyToMono(getResponseClass())
+                .block();
+            return response.getResult();
         } catch (Exception e) {
             return null;
         }

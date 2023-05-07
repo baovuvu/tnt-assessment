@@ -2,8 +2,6 @@ package nl.tnt.assessment.client;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -22,8 +20,8 @@ public class TrackClient extends Client<String, TrackRequest, TrackResponse> {
     }
 
     @Override
-    protected Mono<TrackResponse> getResponseBody(WebClient.ResponseSpec responseSpec) {
-        return responseSpec.bodyToMono(TrackResponse.class);
+    protected Class<TrackResponse> getResponseClass() {
+        return TrackResponse.class;
     }
 
 }
