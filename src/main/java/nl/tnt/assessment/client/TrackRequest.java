@@ -10,11 +10,4 @@ public class TrackRequest extends ClientRequest<String> {
         super(orderNumbers);
     }
 
-    @Override
-    protected Map<String, String> getResult(Map<String, String> response) {
-        return response.entrySet().stream()
-            .filter(entry -> getOrderNumbers().contains(entry.getKey()))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-
 }

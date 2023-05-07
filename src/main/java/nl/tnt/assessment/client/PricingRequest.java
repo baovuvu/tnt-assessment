@@ -10,11 +10,4 @@ public class PricingRequest extends ClientRequest<Float> {
         super(orderNumbers);
     }
 
-    @Override
-    protected Map<String, Float> getResult(Map<String, Float> response) {
-        return response.entrySet().stream()
-            .filter(entry -> getOrderNumbers().contains(entry.getKey()))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-
 }
