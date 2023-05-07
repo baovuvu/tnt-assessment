@@ -9,11 +9,11 @@ import reactor.core.publisher.Mono;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public abstract class Client<T, REQUEST extends ClientRequest<T>, RESPONSE extends ClientResponse<T>> {
+public abstract class Client<T, REQUEST extends ClientRequest<T>> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Client.class);
     private final WebClient webClient;
-    private final Deque<ClientRequest<T>> deque = new ArrayDeque<>();
+    private final Deque<REQUEST> deque = new ArrayDeque<>();
 
     private final String queryParamName;
     private final int queueCap;
@@ -27,15 +27,13 @@ public abstract class Client<T, REQUEST extends ClientRequest<T>, RESPONSE exten
     public Map<String, T> get(List<String> orderNumbers) {
         LOGGER.info(String.format("%s get: %s", this.getClass().getSimpleName(), orderNumbers.toString()));
         if (orderNumbers.isEmpty()) return new HashMap<>();
-        final ClientRequest<T> request = getRequest(orderNumbers);
+        final REQUEST request = getRequest(orderNumbers);
         deque.add(request);
         checkDeque();
         return request.getResult();
     }
 
     protected abstract REQUEST getRequest(List<String> orderNumbers);
-
-    protected abstract Class<RESPONSE> getResponseClass();
 
     private void checkDeque() {
 
@@ -59,14 +57,14 @@ public abstract class Client<T, REQUEST extends ClientRequest<T>, RESPONSE exten
     private Map<String, T> callClient(List<String> orderNumbers) {
         final String values = String.join(",", orderNumbers);
         try {
-            final RESPONSE response = webClient
+            final ClientResponse response = webClient
                 .get()
                 .uri(uriBuilder -> uriBuilder.queryParam(queryParamName, values).build())
                 .retrieve()
                 .onStatus(HttpStatusCode::is5xxServerError, status -> Mono.error(new RuntimeException()))
-                .bodyToMono(getResponseClass())
+                .bodyToMono(getRequest(orderNumbers).getResponse().getClass())
                 .block();
-            return Optional.ofNullable(response).map(s -> s.getResult()).orElse(null);
+            return Optional.ofNullable(response).map(ClientResponse::getResult).orElse(null);
         } catch (Exception e) {
             return null;
         }

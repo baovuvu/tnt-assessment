@@ -13,10 +13,12 @@ import java.util.stream.Collectors;
 public abstract class ClientRequest<T> {
 
     private final List<String> orderNumbers;
+    private final ClientResponse response;
     private final CompletableFuture<Map<String, T>> futureResult = new CompletableFuture<>();
 
-    public ClientRequest(List<String> orderNumbers) {
+    public ClientRequest(List<String> orderNumbers, ClientResponse response) {
         this.orderNumbers = orderNumbers;
+        this.response = response;
     }
 
     public void complete(Map<String, T> response) {

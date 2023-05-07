@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class ShipmentClient extends Client<List<String>, ShipmentRequest, ShipmentResponse> {
+public class ShipmentClient extends Client<List<String>, ShipmentRequest> {
 
     public ShipmentClient(@Value("${client.shipmemt.url}") String url
         , @Value("${client.shipmemt.queryParamName}") String queryParamName
@@ -17,11 +17,6 @@ public class ShipmentClient extends Client<List<String>, ShipmentRequest, Shipme
     @Override
     protected ShipmentRequest getRequest(List<String> orderNumbers) {
         return new ShipmentRequest(orderNumbers);
-    }
-
-    @Override
-    protected Class<ShipmentResponse> getResponseClass() {
-        return ShipmentResponse.class;
     }
 
 }
