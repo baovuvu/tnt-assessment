@@ -57,7 +57,7 @@ public abstract class Client<T, REQUEST extends ClientRequest<T>> {
     private Map<String, T> callClient(List<String> orderNumbers) {
         final String values = String.join(",", orderNumbers);
         try {
-            final ClientResponse response = webClient
+            final ClientResponse<T> response = webClient
                 .get()
                 .uri(uriBuilder -> uriBuilder.queryParam(queryParamName, values).build())
                 .retrieve()
