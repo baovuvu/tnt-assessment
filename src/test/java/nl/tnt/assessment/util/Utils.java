@@ -4,10 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.tnt.assessment.aggregation.AggregationController;
 import nl.tnt.assessment.aggregation.AggregationResponse;
-import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 public class Utils {
 
@@ -57,21 +57,6 @@ public class Utils {
             throw new RuntimeException(e);
         }
         return obj;
-    }
-
-    public static <T> T getPrivateField(Object obj, String fieldName) {
-        final Field field;
-        try {
-            field = obj.getClass().getDeclaredField(fieldName);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-        field.setAccessible(true);
-        try {
-            return (T) field.get(obj);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }
