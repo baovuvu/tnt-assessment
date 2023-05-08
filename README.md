@@ -8,3 +8,7 @@
 By default, the application is running on port 8080: http://localhost:8080/aggregation
 (some http requests are provided in the test directory)
 
+# Decision log
+- Implement story 2 first because this is the bottleneck
+- Use CompletableFuture to queue requests: seems like a workable option
+- Use abstract classes to simplify code
