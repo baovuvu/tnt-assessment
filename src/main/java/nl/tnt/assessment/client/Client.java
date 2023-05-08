@@ -56,7 +56,6 @@ public abstract class Client<T, REQUEST extends ClientRequest<T>, RESPONSE exten
         queue.add(request);
         final List<String> allOrders = getRequestOrders();
         LOGGER.info(String.format("%s Queue: %s", this.getClass().getSimpleName(), allOrders));
-        // todo: check 2nd story-functionality! Here we process all requests in the queue if the cap is hit, why limit it to only 5??
         if (allOrders.size() >= queueCap) processQueue(allOrders);
         return request;
     }
@@ -81,7 +80,7 @@ public abstract class Client<T, REQUEST extends ClientRequest<T>, RESPONSE exten
             return webClient.get()
                 .uri(uriBuilder -> uriBuilder.queryParam(queryParamName, values).build())
                 .retrieve()
-                .onStatus(HttpStatusCode::is5xxServerError, status -> Mono.error(new RuntimeException()))
+                .onStatus(HttpStatusCode::is5xxServerError, status -> Mono.error(new Exception("Service unavailable")))
                 .bodyToMono(getResponseClass())
                 .block();
         } catch (Exception e) {
