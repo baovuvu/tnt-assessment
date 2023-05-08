@@ -101,7 +101,7 @@ abstract class ClientTest<CLIENT extends Client, REQUEST extends ClientRequest, 
         enqueue(response.getResult());
         client.processQueue();
         assertTrue(requestInQueue.getFutureResult().isDone());
-        assertEquals(requestInQueue.getResponse().get(), response);
+        assertEquals(requestInQueue.getResponse().orElse(null), response);
     }
 
     private Map<String, Object> nullValuesMap(List<String> keys){
