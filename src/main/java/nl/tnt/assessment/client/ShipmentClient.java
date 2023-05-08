@@ -10,8 +10,9 @@ public class ShipmentClient extends Client<List<String>, ShipmentRequest, Shipme
 
     public ShipmentClient(@Value("${client.shipmemt.url}") String url
         , @Value("${client.shipmemt.queryParamName}") String queryParamName
-        , @Value("${client.shipmemt.queueCap}") int queueCap) {
-        super(url, queryParamName, queueCap);
+        , @Value("${client.shipmemt.queueCap}") int queueCap
+        , @Value("${client.shipmemt.queueSeconds}") int queueSeconds) {
+        super(url, queryParamName, queueCap, queueSeconds);
     }
 
     @Override

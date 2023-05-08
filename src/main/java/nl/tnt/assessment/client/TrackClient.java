@@ -10,8 +10,9 @@ public class TrackClient extends Client<String, TrackRequest, TrackResponse> {
 
     public TrackClient(@Value("${client.track.url}") String url
         , @Value("${client.track.queryParamName}") String queryParamName
-        , @Value("${client.track.queueCap}") int queueCap) {
-        super(url, queryParamName, queueCap);
+        , @Value("${client.track.queueCap}") int queueCap
+        , @Value("${client.track.queueSeconds}") int queueSeconds) {
+        super(url, queryParamName, queueCap, queueSeconds);
     }
 
     @Override

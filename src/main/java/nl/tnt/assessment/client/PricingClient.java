@@ -10,8 +10,9 @@ public class PricingClient extends Client<Float, PricingRequest, PricingResponse
 
     public PricingClient(@Value("${client.pricing.url}") String url
         , @Value("${client.pricing.queryParamName}") String queryParamName
-        , @Value("${client.pricing.queueCap}") int queueCap) {
-        super(url, queryParamName, queueCap);
+        , @Value("${client.pricing.queueCap}") int queueCap
+        , @Value("${client.pricing.queueSeconds}") int queueSeconds) {
+        super(url, queryParamName, queueCap, queueSeconds);
     }
 
     @Override
