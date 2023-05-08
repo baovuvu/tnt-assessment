@@ -4,7 +4,6 @@ import nl.tnt.assessment.client.PricingClient;
 import nl.tnt.assessment.client.ShipmentClient;
 import nl.tnt.assessment.client.TrackClient;
 import nl.tnt.assessment.util.Utils;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,10 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collection;
-import java.util.Deque;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
