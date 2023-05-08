@@ -16,6 +16,7 @@ public class ClientScheduledJob extends QuartzJobBean {
         this.clients = List.of(shipmentClient, trackClient, pricingClient);
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
     protected void executeInternal(JobExecutionContext context) {
         clients.forEach(Client::processQueue);

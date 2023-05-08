@@ -24,6 +24,7 @@ import static nl.tnt.assessment.util.Utils.convertToJson;
 import static nl.tnt.assessment.util.Utils.setPrivateField;
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("rawtypes")
 @ExtendWith(MockitoExtension.class)
 abstract class ClientTest<CLIENT extends Client, REQUEST extends ClientRequest, RESPONSE extends ClientResponse> {
 
