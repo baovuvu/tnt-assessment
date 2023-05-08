@@ -2,6 +2,7 @@ package nl.tnt.assessment.client;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @Getter
+@EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // hibernate, serializer
 public abstract class ClientResponse<T> {
 

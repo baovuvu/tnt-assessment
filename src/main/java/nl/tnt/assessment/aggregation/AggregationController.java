@@ -3,6 +3,7 @@ package nl.tnt.assessment.aggregation;
 import nl.tnt.assessment.client.PricingClient;
 import nl.tnt.assessment.client.ShipmentClient;
 import nl.tnt.assessment.client.TrackClient;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,11 +40,6 @@ public class AggregationController {
         // setting the results from the clients asynchronously:
         setters.stream().parallel().forEach(f -> f.apply(response));
         return response;
-//        return AggregationResponse.builder()
-//            .shipments(shipmentClient.get(getList(shipments)))
-//            .pricing(pricingClient.get(getList(pricing)))
-//            .track(trackClient.get(getList(track)))
-//            .build();
     }
 
     private AggregationResponse setShipments(AggregationResponse response) {
@@ -58,9 +54,11 @@ public class AggregationController {
         return response.setPricing(pricingClient.get(getList(response.getPricingParam())));
     }
 
-    private static List<String> getList(String commaSeparatedValues) {
+    public static List<String> getList(String commaSeparatedValues) {
         return Optional.ofNullable(commaSeparatedValues)
             .map(values -> Arrays.stream(values.split(","))
+                .map(String::trim)
+                .filter(StringUtils::hasText)
                 .distinct()
                 .toList())
             .orElse(Collections.emptyList());
