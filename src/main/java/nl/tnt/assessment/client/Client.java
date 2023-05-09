@@ -40,6 +40,7 @@ public abstract class Client<T, REQUEST extends ClientRequest<T>, RESPONSE exten
         LOGGER.info(String.format("%s get: %s", this.getClass().getSimpleName(), orders.toString()));
         if (orders.isEmpty()) return new HashMap<>();
         final REQUEST request = addToQueue(orders);
+        // request.getResponse() will holds execution of the code while the request is not yet completed (i.e. the request is still in the queue)!
         return request.getResponse().orElse(getResponse()).getResult(orders);
     }
 

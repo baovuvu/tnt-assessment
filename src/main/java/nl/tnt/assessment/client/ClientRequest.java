@@ -25,6 +25,7 @@ public abstract class ClientRequest<T> {
 
     public Optional<ClientResponse<T>> getResponse() {
         try {
+            // futureResult.get() will holds execution of the code until it's completed!
             return Optional.ofNullable(futureResult.get());
         } catch (InterruptedException | ExecutionException e) {
             return Optional.empty();
