@@ -48,30 +48,33 @@ public abstract class Client<T, REQUEST extends ClientRequest<T>, RESPONSE exten
         queue.stream()
             .filter(request -> request.getQueueDate().plusSeconds(queueSeconds).isBefore(LocalDateTime.now()))
             .findFirst()
-            .ifPresent(request -> processQueue(getRequestOrders()));
+            .ifPresent(request -> processAndClearQueue());
     }
 
     private REQUEST addToQueue(List<String> orders) {
         LOGGER.info(String.format("%s addToQueue: %s", this.getClass().getSimpleName(), orders.toString()));
         final REQUEST request = getRequest(orders);
         queue.add(request);
-        final List<String> allOrders = getRequestOrders();
+        final List<String> allOrders = getRequestOrders(queue);
         LOGGER.info(String.format("%s Queue: %s", this.getClass().getSimpleName(), allOrders));
-        if (allOrders.size() >= queueCap) processQueue(allOrders);
+        if (allOrders.size() >= queueCap) processAndClearQueue();
         return request;
     }
 
-    private List<String> getRequestOrders() {
-        return queue.stream()
-            .flatMap(item -> item.getOrders().stream())
-            .collect(Collectors.toList());
-    }
-
-    private void processQueue(List<String> orders) {
+    private void processAndClearQueue() {
+        final List<REQUEST> requests = queue.stream().collect(Collectors.toList());
+        final List<String> orders = getRequestOrders(requests);
         LOGGER.info(String.format("%s processQueue: %s", this.getClass().getSimpleName(), orders.toString()));
         final RESPONSE response = callClient(orders);
-        queue.forEach(request -> request.complete(response));
-        queue.clear();
+        requests.stream()
+            .map(request -> request.complete(response))
+            .forEach(queue::remove);// remove the requests from the queue instead of queue.clear() to avoid concurrency issues...
+    }
+
+    private List<String> getRequestOrders(List<REQUEST> requests) {
+        return requests.stream()
+            .flatMap(item -> item.getOrders().stream())
+            .collect(Collectors.toList());
     }
 
     private RESPONSE callClient(List<String> orders) {

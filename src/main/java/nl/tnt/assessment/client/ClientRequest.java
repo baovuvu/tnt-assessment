@@ -19,8 +19,9 @@ public abstract class ClientRequest<T> {
         this.orders = orders;
     }
 
-    public void complete(ClientResponse<T> response) {
+    public ClientRequest<T> complete(ClientResponse<T> response) {
         futureResult.complete(response);
+        return this;
     }
 
     public Optional<ClientResponse<T>> getResponse() {
