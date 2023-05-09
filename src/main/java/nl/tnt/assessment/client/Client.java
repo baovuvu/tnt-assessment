@@ -61,8 +61,9 @@ public abstract class Client<T, REQUEST extends ClientRequest<T>, RESPONSE exten
         return request;
     }
 
+    @SuppressWarnings("SuspiciousMethodCalls")
     private void processAndClearQueue() {
-        final List<REQUEST> requests = queue.stream().collect(Collectors.toList());
+        final List<REQUEST> requests = new ArrayList<>(queue);
         final List<String> orders = getRequestOrders(requests);
         LOGGER.info(String.format("%s processQueue: %s", this.getClass().getSimpleName(), orders.toString()));
         final RESPONSE response = callClient(orders);
